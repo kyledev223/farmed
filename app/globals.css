@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-bg font-mono text-ink antialiased;
+    background-image: linear-gradient(rgba(11, 15, 12, 0.82), rgba(11, 15, 12, 0.94)),
+      url("/bg-soil.png");
+    background-size: auto, 314px 314px;
+    background-repeat: repeat;
+    image-rendering: pixelated;
+    overflow-x: hidden;
+  }
+  /* Text stays crisp even though the body background is pixelated */
+  body * {
+    image-rendering: auto;
+  }
+  ::selection {
+    background: #22ff88;
+    color: #0b0f0c;
+  }
+  :focus-visible {
+    outline: 2px solid #f5c542;
+    outline-offset: 2px;
+  }
+  h1, h2, h3, h4 {
+    @apply font-pixel;
+    line-height: 1.5;
+  }
+}
+
+@layer components {
+  .pixelated {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+  .container-farm {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+  }
+  .panel {
+    @apply border-2 border-line bg-panel;
+  }
+  .eyebrow {
+    @apply font-pixel text-[10px] uppercase tracking-wider text-muted;
+  }
+  .num {
+    @apply font-pixel tabular-nums;
+  }
+
+  /* Buttons: square, chunky border, hard drop shadow that "presses" */
+  .btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 border-2 px-4 py-3 font-pixel text-[11px] uppercase leading-none tracking-wide transition-[transform,box-shadow,background-color] duration-100;
+  }
+  .btn:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 #000;
+  }
+  .btn:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+  .btn-gold {
+    @apply border-black bg-gold text-bg shadow-hard hover:bg-[#FFD566];
+  }
+  .btn-green {
+    @apply border-black bg-neon text-bg shadow-hard hover:bg-[#5CFFA8];
+  }
+  .btn-ghost {
+    @apply border-line bg-panel text-ink hover:border-neon hover:text-neon hover:shadow-glow;
+  }
+
+  .glow-hover {
+    @apply transition-[transform,box-shadow,border-color] duration-150;
+  }
+  .glow-hover:hover,
+  .glow-hover:focus-within {
+    @apply border-neon shadow-glow;
+  }
+
+  /* CRT scanlines + vignette, applied on top of the hero */
+  .crt::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 0px,
+        rgba(0, 0, 0, 0) 2px,
+        rgba(0, 0, 0, 0.22) 3px,
+        rgba(0, 0, 0, 0) 4px
+      ),
+      radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+    z-index: 1;
+  }
+
+  /* Long-form docs body */
+  .docs-prose p,
+  .docs-prose ul,
+  .docs-prose dl,
+  .docs-prose pre {
+    @apply mb-4 text-sm leading-7 text-ink/85;
+  }
+  .docs-prose ul {
+    @apply space-y-2 pl-0;
+  }
+  .docs-prose ul > li {
+    @apply relative pl-5;
+  }
+  .docs-prose ul > li::before {
+    content: "";
+    @apply absolute left-0 top-[11px] h-1.5 w-1.5 bg-neon;
+  }
+  .docs-prose strong {
+    @apply font-semibold text-ink;
+  }
+  .docs-prose pre {
+    @apply overflow-x-auto border-2 border-line bg-bg p-4 text-xs text-neon;
+  }
+  .docs-prose dl > div {
+    @apply border-b-2 border-dashed border-line py-4 first:pt-0;
+  }
+  .docs-prose dt {
+    @apply font-pixel text-[11px] leading-relaxed text-gold;
+  }
+  .docs-prose dd {
+    @apply mt-2 text-muted;
+  }
+
+  /* Stepped "pixel" corners via clip-path */
+  .pixel-corners {
+    clip-path: polygon(
+      0 4px, 4px 4px, 4px 0, calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
+      100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
+      4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
+    );
+  }
+}
+
+/* Confetti squares fired from the reveal card (uses --dx / --dy per particle) */
+@keyframes pixel-fly {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0.5); opacity: 0; }
+}
+.pixel-particle {
+  left: calc(50% - 4px);
+  top: calc(50% - 4px);
+  animation: pixel-fly 900ms steps(9) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pixel-particle { display: none; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
