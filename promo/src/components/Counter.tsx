@@ -18,7 +18,18 @@ export const Counter: React.FC<{
   suffix?: string;
   ease?: (t: number) => number;
   style?: CSSProperties;
-}> = ({ to, from = 0, start, end, decimals = 0, compact, prefix = "", suffix = "", ease = Easing.out(Easing.cubic), style }) => {
+}> = ({
+  to,
+  from = 0,
+  start,
+  end,
+  decimals = 0,
+  compact,
+  prefix = "",
+  suffix = "",
+  ease = Easing.out(Easing.cubic),
+  style,
+}) => {
   const frame = useCurrentFrame();
   const raw = from + (to - from) * progress(frame, start, end, ease);
   const unit = 10 ** decimals;

@@ -3,10 +3,17 @@
  * Pixel-font lines wrap automatically to fit; use "\n" to force a break.
  */
 
-export type IconName = "wallet" | "pitchfork" | "flame" | "sol" | "clock" | "barn";
+export type IconName =
+  | "wallet"
+  | "pitchfork"
+  | "flame"
+  | "sol"
+  | "clock"
+  | "barn";
 export type SeriesKey = "jeeter" | "paperhand" | "bagholder" | "whale";
 
-export const TAGLINE = "You're not trading. You're being farmed. Might as well own the farm.";
+export const TAGLINE =
+  "You're not trading. You're being farmed. Might as well own the farm.";
 
 export const COPY = {
   hook: {
@@ -34,6 +41,8 @@ export const COPY = {
 
   roll: {
     title: "MINTING...",
+    /** Shown beside the reel (16:9 only) while it spins. */
+    hint: "100,000 $FARMED burned.\nRolling the barn door...",
     /** Farm image the reel lands on (public/farms/<id>.png). */
     resultId: "whale-3",
     resultName: "WHALE RANCH",
@@ -63,10 +72,35 @@ export const COPY = {
     cta: "MINT A FARM",
     /** Illustrative numbers for the dashboard mock (the live site is zero until launch). */
     stats: [
-      { label: "Yield rate", icon: "pitchfork", to: 18_420, decimals: 0, tone: "neon" },
-      { label: "SOL harvested", icon: "sol", to: 1_284.37, decimals: 2, tone: "text" },
-      { label: "Farms minted", icon: "barn", to: 3_412, decimals: 0, tone: "text" },
-      { label: "$FARMED burned", icon: "flame", to: 341_200_000, decimals: 0, compact: true, tone: "barn" },
+      {
+        label: "Yield rate",
+        icon: "pitchfork",
+        to: 18_420,
+        decimals: 0,
+        tone: "neon",
+      },
+      {
+        label: "SOL harvested",
+        icon: "sol",
+        to: 1_284.37,
+        decimals: 2,
+        tone: "text",
+      },
+      {
+        label: "Farms minted",
+        icon: "barn",
+        to: 3_412,
+        decimals: 0,
+        tone: "text",
+      },
+      {
+        label: "$FARMED burned",
+        icon: "flame",
+        to: 341_200_000,
+        decimals: 0,
+        compact: true,
+        tone: "barn",
+      },
     ] as {
       label: string;
       icon: IconName;
@@ -80,7 +114,16 @@ export const COPY = {
     catalogueTitle: "CATALOGUE",
     /** Which catalogue card the cursor hovers (index into the grid). */
     hoverIndex: 3,
-    catalogue: ["jeeter-2", "paperhand-3", "bagholder-2", "whale-3", "jeeter-3", "whale-1", "paperhand-1", "bagholder-3"],
+    catalogue: [
+      "jeeter-2",
+      "paperhand-3",
+      "bagholder-2",
+      "whale-3",
+      "jeeter-3",
+      "whale-1",
+      "paperhand-1",
+      "bagholder-3",
+    ],
   },
 
   cta: {

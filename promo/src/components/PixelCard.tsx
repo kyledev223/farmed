@@ -11,13 +11,25 @@ export const PixelCard: React.FC<{
   border?: number;
   shadow?: number;
   style?: CSSProperties;
-}> = ({ children, accent, glowAmount = 0, border = BORDER, shadow = 8, style }) => (
+}> = ({
+  children,
+  accent,
+  glowAmount = 0,
+  border = BORDER,
+  shadow = 8,
+  style,
+}) => (
   <div
     style={{
       position: "relative",
       background: C.panel,
       border: `${border}px solid ${C.border}`,
-      boxShadow: [hardShadow(shadow), glowAmount > 0 ? glow(accent ?? C.neon, glowAmount) : ""].filter(Boolean).join(", "),
+      boxShadow: [
+        hardShadow(shadow),
+        glowAmount > 0 ? glow(accent ?? C.neon, glowAmount) : "",
+      ]
+        .filter(Boolean)
+        .join(", "),
       ...style,
     }}
   >

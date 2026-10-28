@@ -9,5 +9,7 @@ import { Config } from "@remotion/cli/config";
 
 Config.setRspack(true);
 Config.setVideoImageFormat("jpeg");
+// Pixel art + hard edges: keep intermediate frames near-lossless.
+Config.setJpegQuality(95);
 Config.setOverwriteOutput(true);
 Config.setDefaultPremountInSeconds(2);

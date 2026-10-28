@@ -24,7 +24,11 @@ export const PixelArrow: React.FC<{
   const horiz = direction === "right";
 
   // (along, across) → absolute box, so one code path draws both directions.
-  const box = (along: number, across: number, extra?: React.CSSProperties): React.CSSProperties => ({
+  const box = (
+    along: number,
+    across: number,
+    extra?: React.CSSProperties,
+  ): React.CSSProperties => ({
     position: "absolute",
     left: horiz ? along : across,
     top: horiz ? across : along,
@@ -35,16 +39,32 @@ export const PixelArrow: React.FC<{
   });
 
   const blocks: React.CSSProperties[] = [];
-  for (let i = 0; i < shown; i++) blocks.push(box(i * pitch, cross / 2 - block / 2, { boxShadow: "3px 3px 0 #000" }));
+  for (let i = 0; i < shown; i++)
+    blocks.push(
+      box(i * pitch, cross / 2 - block / 2, { boxShadow: "3px 3px 0 #000" }),
+    );
   if (done) {
     // Three rows narrowing to a point: 5, 3, 1 blocks.
     [5, 3, 1].forEach((w, row) => {
-      for (let k = 0; k < w; k++) blocks.push(box(length - headLen + row * block, (cross - w * block) / 2 + k * block));
+      for (let k = 0; k < w; k++)
+        blocks.push(
+          box(
+            length - headLen + row * block,
+            (cross - w * block) / 2 + k * block,
+          ),
+        );
     });
   }
 
   return (
-    <div style={{ position: "relative", width: horiz ? length : cross, height: horiz ? cross : length, flexShrink: 0 }}>
+    <div
+      style={{
+        position: "relative",
+        width: horiz ? length : cross,
+        height: horiz ? cross : length,
+        flexShrink: 0,
+      }}
+    >
       {blocks.map((s, i) => (
         <div key={i} style={s} />
       ))}

@@ -23,21 +23,36 @@ export const Brand: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ background: C.bg, overflow: "hidden" }}>
-      <AbsoluteFill style={{ transform: `translateX(${panX}px) scale(${zoom})` }}>
-        <PixelImg src="hero.png" fit="cover" style={{ width: "100%", height: "100%", objectPosition: pick("50% 50%", "72% 50%") }} />
+      <AbsoluteFill
+        style={{ transform: `translateX(${panX}px) scale(${zoom})` }}
+      >
+        <PixelImg
+          src="hero.png"
+          fit="cover"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectPosition: pick("50% 50%", "72% 50%"),
+          }}
+        />
       </AbsoluteFill>
       <AbsoluteFill
         style={{
           background: `linear-gradient(to bottom, ${hexA(C.bg, 0.55)} 0%, ${hexA(C.bg, 0.2)} 35%, ${hexA(C.bg, 0.35)} 60%, ${hexA(C.bg, 0.9)} 100%)`,
         }}
       />
-      <AbsoluteFill style={{ background: `radial-gradient(ellipse at 50% ${pick(42, 40)}%, ${hexA(C.bg, 0.7)} 0%, transparent 55%)` }} />
+      <AbsoluteFill
+        style={{
+          background: `radial-gradient(ellipse at 50% ${pick(42, 40)}%, ${hexA(C.bg, 0.7)} 0%, transparent 55%)`,
+        }}
+      />
 
       {/* parallax motes */}
       {Array.from({ length: 26 }, (_, i) => {
         const r = (k: string) => random(`mote-${i}-${k}`);
         const s = r("s") > 0.6 ? 8 : 4;
-        const x = (r("x") * (width + 200) - frame * (2 + r("v") * 4)) % (width + 200);
+        const x =
+          (r("x") * (width + 200) - frame * (2 + r("v") * 4)) % (width + 200);
         const y = r("y") * height - frame * (0.6 + r("u"));
         return (
           <div
@@ -55,7 +70,15 @@ export const Brand: React.FC = () => {
         );
       })}
 
-      <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", flexDirection: "column", gap: pick(10, 40), paddingBottom: pick(40, 160) }}>
+      <AbsoluteFill
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+          gap: pick(10, 40),
+          paddingBottom: pick(40, 160),
+        }}
+      >
         <div
           style={{
             width: wmW,
@@ -64,13 +87,26 @@ export const Brand: React.FC = () => {
             filter: `drop-shadow(0 0 ${Math.round(8 + 30 * pulse)}px ${hexA(C.neon, 0.35 + 0.5 * pulse)}) drop-shadow(10px 10px 0 #000)`,
           }}
         >
-          <PixelImg src="logo-wordmark.png" style={{ width: "100%", height: "auto" }} />
+          <PixelImg
+            src="logo-wordmark.png"
+            style={{ width: "100%", height: "auto" }}
+          />
         </div>
-        <div style={{ width: width - padX * 2, display: "flex", justifyContent: "center" }}>
+        {/* Subtitle bar keeps the line legible over the busy hero; the negative margin eats the wordmark PNG's bottom padding. */}
+        <div
+          style={{
+            marginTop: pick(-90, -70),
+            padding: pick("20px 32px", "24px 28px"),
+            background:
+              frame >= BRAND.subtext ? "rgba(0,0,0,0.72)" : "transparent",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
           <Typewriter
             text={COPY.brand.subtext}
             start={BRAND.subtext}
-            maxWidth={width - padX * 2}
+            maxWidth={width - padX * 2 - 64}
             maxFont={pick(46, 60)}
             maxLines={2}
             color={C.gold}
@@ -80,7 +116,9 @@ export const Brand: React.FC = () => {
         </div>
       </AbsoluteFill>
 
-      {flash > 0 && <AbsoluteFill style={{ background: C.text, opacity: flash }} />}
+      {flash > 0 && (
+        <AbsoluteFill style={{ background: C.text, opacity: flash }} />
+      )}
     </AbsoluteFill>
   );
 };

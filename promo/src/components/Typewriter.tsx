@@ -22,15 +22,34 @@ export const Typewriter: React.FC<{
   cursorUntil?: number;
   align?: "left" | "center";
   style?: CSSProperties;
-}> = ({ text, start, framesPerChar = 1, maxWidth, maxFont, maxLines, color, cursorColor, cursorUntil = Infinity, align = "left", style }) => {
+}> = ({
+  text,
+  start,
+  framesPerChar = 1,
+  maxWidth,
+  maxFont,
+  maxLines,
+  color,
+  cursorColor,
+  cursorUntil = Infinity,
+  align = "left",
+  style,
+}) => {
   const frame = useCurrentFrame();
-  const { fontSize, lines } = fitText(text, { maxWidth, maxFont, maxLines });
-  if (frame < start) return null;
+  // Keep one free glyph after the last line so the end-of-text cursor stays inside maxWidth.
+  const { fontSize, lines } = fitText(text, {
+    maxWidth,
+    maxFont,
+    maxLines,
+    reserveEnd: 1,
+  });
 
-  const typed = Math.floor((frame - start) / framesPerChar);
+  // Before it starts, still take up the space, so stacked lines never shift.
+  const typed = frame < start ? 0 : Math.floor((frame - start) / framesPerChar);
   const total = lines.reduce((n, l) => n + l.length, 0);
   const done = typed >= total;
-  const showCursor = frame < cursorUntil && (!done || blink(frame - start));
+  const showCursor =
+    frame >= start && frame < cursorUntil && (!done || blink(frame - start));
 
   // Where the cursor sits: the first untyped char, or the end of the last line.
   let cursorLine = lines.length - 1;
@@ -58,13 +77,23 @@ export const Typewriter: React.FC<{
       }}
     >
       {lines.map((line, i) => {
-        const n = i < cursorLine ? line.length : i === cursorLine ? cursorCol : 0;
+        const n =
+          i < cursorLine ? line.length : i === cursorLine ? cursorCol : 0;
         return (
           <div key={i}>
             {line.slice(0, n)}
             <span style={{ position: "relative" }}>
               {i === cursorLine && showCursor && (
-                <span style={{ position: "absolute", left: 0, top: "0.08em", width: "0.9em", height: "1em", background: cursorColor ?? color }} />
+                <span
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    top: "0.08em",
+                    width: "0.9em",
+                    height: "1em",
+                    background: cursorColor ?? color,
+                  }}
+                />
               )}
             </span>
             <span style={{ visibility: "hidden" }}>{line.slice(n)}</span>

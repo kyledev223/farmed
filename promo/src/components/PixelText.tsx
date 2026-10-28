@@ -15,8 +15,24 @@ export const PixelText: React.FC<{
   shadow?: boolean;
   font?: "pixel" | "mono";
   style?: CSSProperties;
-}> = ({ text, maxWidth, maxFont, maxLines, color, align = "center", lineHeight = 1.35, shadow = true, font = "pixel", style }) => {
-  const { fontSize, lines } = fitText(text, { maxWidth, maxFont, maxLines, font });
+}> = ({
+  text,
+  maxWidth,
+  maxFont,
+  maxLines,
+  color,
+  align = "center",
+  lineHeight = 1.35,
+  shadow = true,
+  font = "pixel",
+  style,
+}) => {
+  const { fontSize, lines } = fitText(text, {
+    maxWidth,
+    maxFont,
+    maxLines,
+    font,
+  });
   const d = Math.max(2, Math.round(fontSize / 12));
   return (
     <div

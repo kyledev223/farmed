@@ -12,7 +12,18 @@ export const ParticleBurst: React.FC<{
   life?: number;
   gravity?: number;
   seed?: string;
-}> = ({ at, x, y, count = 48, colors, speed = 30, size = 12, life = 28, gravity = 1.4, seed = "burst" }) => {
+}> = ({
+  at,
+  x,
+  y,
+  count = 48,
+  colors,
+  speed = 30,
+  size = 12,
+  life = 28,
+  gravity = 1.4,
+  seed = "burst",
+}) => {
   const frame = useCurrentFrame();
   const t = frame - at;
   if (t < 0 || t > life) return null;

@@ -1,7 +1,11 @@
 import { FONT } from "../theme";
 
 /** Series/tier badge in the site's style: dark text on the tier swatch, 2px black border. */
-export const TierBadge: React.FC<{ label: string; color: string; size: number }> = ({ label, color, size }) => (
+export const TierBadge: React.FC<{
+  label: string;
+  color: string;
+  size: number;
+}> = ({ label, color, size }) => (
   <span
     style={{
       display: "inline-block",

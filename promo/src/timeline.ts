@@ -124,11 +124,14 @@ export const SITE = {
   deviceInFrames: 10,
   statsStart: beats(1),
   statsEnd: beats(4),
-  chartStart: beats(2),
-  chartEnd: beats(5),
-  scrollStart: beats(4),
+  chartStart: beats(1.5),
+  chartEnd: beats(4),
+  /** Page scrolls from the dashboard down to the catalogue, then a card gets hovered. */
+  scrollStart: beats(4.5),
   scrollEnd: beats(5.5),
   hover: beats(6),
+  /** Desktop mock is rendered at this zoom so its UI text survives a phone screen. */
+  desktopZoom: 1.15,
 };
 
 export const CTA = {
@@ -143,11 +146,21 @@ export const CTA = {
 /* Absolute cues                                                       */
 /* ------------------------------------------------------------------ */
 
-export type Shake = { at: number; frames: number; amp: number; ramp?: "in" | "out" };
+export type Shake = {
+  at: number;
+  frames: number;
+  amp: number;
+  ramp?: "in" | "out";
+};
 
 /** Screen shakes (absolute frames). `ramp: "in"` builds up, default decays. */
 export const SHAKES: Shake[] = [
-  { at: SCENES.hook.from + HOOK.rumbleStart, frames: SCENES.brand.from - (SCENES.hook.from + HOOK.rumbleStart), amp: 7, ramp: "in" },
+  {
+    at: SCENES.hook.from + HOOK.rumbleStart,
+    frames: SCENES.brand.from - (SCENES.hook.from + HOOK.rumbleStart),
+    amp: 7,
+    ramp: "in",
+  },
   { at: SCENES.brand.from, frames: beats(1), amp: 30 },
   { at: SCENES.roll.from + ROLL.land, frames: 10, amp: 14 },
   { at: SCENES.harvest.from + HARVEST.coinsStart, frames: 8, amp: 10 },
@@ -157,7 +170,10 @@ export const SHAKES: Shake[] = [
 export type SfxName = "coin" | "whoosh" | "burn" | "reveal";
 export type SfxCue = { name: SfxName; at: number; volume?: number };
 
-const coinTicks = Array.from({ length: 7 }, (_, i) => SCENES.harvest.from + HARVEST.counterStart + i * 6);
+const coinTicks = Array.from(
+  { length: 7 },
+  (_, i) => SCENES.harvest.from + HARVEST.counterStart + i * 6,
+);
 
 /** Optional SFX — each one is skipped if public/sfx/<name>.mp3 doesn't exist. */
 export const SFX: SfxCue[] = [

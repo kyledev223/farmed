@@ -12,8 +12,12 @@ export const stepped =
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
 /** 0→1 between two frames, optionally eased. */
-export const progress = (frame: number, start: number, end: number, ease?: Ease) =>
-  interpolate(frame, [start, end], [0, 1], { ...clamp, easing: ease });
+export const progress = (
+  frame: number,
+  start: number,
+  end: number,
+  ease?: Ease,
+) => interpolate(frame, [start, end], [0, 1], { ...clamp, easing: ease });
 
 /**
  * Pixel "pop" in, matching the site's `pop 420ms steps(6)`:
@@ -22,7 +26,12 @@ export const progress = (frame: number, start: number, end: number, ease?: Ease)
 export function pop(frame: number, at: number, frames = 6) {
   const t = Math.floor(frame - at);
   if (t < 0) return { scale: 0.6, opacity: 0 };
-  const scale = interpolate(t, [0, frames * 0.6, frames], [0.6, 1.08, 1], clamp);
+  const scale = interpolate(
+    t,
+    [0, frames * 0.6, frames],
+    [0.6, 1.08, 1],
+    clamp,
+  );
   return { scale: Math.round(scale * 20) / 20, opacity: 1 };
 }
 
@@ -30,7 +39,13 @@ export function pop(frame: number, at: number, frames = 6) {
 export function slam(frame: number, at: number, frames = 4, from = 2.6) {
   const t = frame - at;
   if (t < 0) return { scale: from, opacity: 0 };
-  return { scale: interpolate(t, [0, frames], [from, 1], { ...clamp, easing: stepped(frames, Easing.in(Easing.quad)) }), opacity: 1 };
+  return {
+    scale: interpolate(t, [0, frames], [from, 1], {
+      ...clamp,
+      easing: stepped(frames, Easing.in(Easing.quad)),
+    }),
+    opacity: 1,
+  };
 }
 
 /** 1 on every beat, decaying to 0 within `decay` frames (stepped). */
@@ -40,7 +55,8 @@ export function beatPulse(frame: number, decay = 9, offset = 0) {
 }
 
 /** Square-wave blink for cursors. */
-export const blink = (frame: number, period = 16) => Math.floor(frame / (period / 2)) % 2 === 0;
+export const blink = (frame: number, period = 16) =>
+  Math.floor(frame / (period / 2)) % 2 === 0;
 
 /** Combined screen-shake offset for an absolute frame, from timeline SHAKES. */
 export function shakeAt(frame: number) {

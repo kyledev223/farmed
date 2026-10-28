@@ -1,7 +1,7 @@
 {
-  "name": "promo",
+  "name": "farmed-promo",
   "version": "1.0.0",
-  "description": "My Remotion video",
+  "description": "FARMED 26s promo video (Remotion)",
   "repository": {},
   "license": "UNLICENSED",
   "engines": {
@@ -10,7 +10,7 @@
   "private": true,
   "dependencies": {
     "@remotion/cli": "4.0.539",
-    "@remotion/google-fonts": "^4.0.539",
+    "@remotion/google-fonts": "4.0.539",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "remotion": "4.0.539"
@@ -25,6 +25,10 @@
   },
   "scripts": {
     "dev": "remotion studio",
+    "assets": "node scripts/prepare-assets.mjs",
+    "render:wide": "remotion render Promo-16x9 out/farmed-16x9.mp4 --codec=h264 --crf=18",
+    "render:vertical": "remotion render Promo-9x16 out/farmed-9x16.mp4 --codec=h264 --crf=18",
+    "render": "npm run render:wide && npm run render:vertical",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc"

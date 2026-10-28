@@ -2,8 +2,14 @@ import { loadFont as loadJetBrains } from "@remotion/google-fonts/JetBrainsMono"
 import { loadFont as loadPressStart } from "@remotion/google-fonts/PressStart2P";
 import type { SeriesKey } from "./copy";
 
-const pressStart = loadPressStart("normal", { weights: ["400"], subsets: ["latin"] });
-const jetbrains = loadJetBrains("normal", { weights: ["400", "700"], subsets: ["latin"] });
+const pressStart = loadPressStart("normal", {
+  weights: ["400"],
+  subsets: ["latin"],
+});
+const jetbrains = loadJetBrains("normal", {
+  weights: ["400", "700"],
+  subsets: ["latin"],
+});
 
 export const FONT = {
   pixel: pressStart.fontFamily,
