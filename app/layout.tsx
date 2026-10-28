@@ -4,6 +4,7 @@ import { MintProvider } from "@/components/MintProvider";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { WalletProviders } from "@/components/wallet/WalletProviders";
+import { X_HANDLE } from "@/lib/mock";
 import "./globals.css";
 
 const pixel = Press_Start_2P({ weight: "400", subsets: ["latin"], variable: "--font-pixel", display: "swap" });
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
     description: "You're not trading. You're being farmed. Might as well own the farm.",
     images: [{ url: "/og.png", width: 1200, height: 630 }],
   },
-  twitter: { card: "summary_large_image", images: ["/og.png"] },
+  twitter: { card: "summary_large_image", site: `@${X_HANDLE}`, creator: `@${X_HANDLE}`, images: ["/og.png"] },
 };
 
 export const viewport: Viewport = {

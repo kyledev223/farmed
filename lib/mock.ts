@@ -53,10 +53,11 @@ export const TOKEN_SYMBOL = "$FARMED";
 export const MINT_COST = 100_000;
 export const HARVEST_INTERVAL_SEC = 600;
 export const PAYOUT_ASSET = "SOL";
-/** PLACEHOLDER contract address — swap for the real mint before launch. */
-export const CONTRACT_ADDRESS = "8kFaRMeDq9ZtV3yWb2NxLcH7uPj4sE6aGmRf1TzQpump";
-export const X_URL = "https://x.com/";
-export const BUY_URL = "https://pump.fun/";
+/** $FARMED token mint (contract address). */
+export const CONTRACT_ADDRESS = "uSf3r8EJDXpXLi5bLvBP53ZunHy32QD8qvfYHcdpump";
+export const X_HANDLE = "getfarmedfun";
+export const X_URL = `https://x.com/${X_HANDLE}`;
+export const BUY_URL = `https://pump.fun/coin/${CONTRACT_ADDRESS}`;
 export const EXPLORER_TX = (sig: string) => `https://solscan.io/tx/${sig}`;
 
 /* ------------------------------------------------------------------ */
