@@ -10,11 +10,11 @@ import {
   TIER_HEX,
   TIER_LABEL,
   TOKEN_SYMBOL,
-  WALLET_SUMMARY,
   rollMockFarm,
   type FarmSpec,
 } from "@/lib/mock";
 import { fmtInt } from "@/lib/format";
+import { useFarmedWallet } from "@/hooks/useFarmedWallet";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { FarmCard } from "./FarmCard";
 import { PixelIcon } from "./PixelIcon";
@@ -125,7 +125,9 @@ export function MintModal({ open, onClose }: { open: boolean; onClose: () => voi
 /* ------------------------------------------------------------------ */
 
 function Confirm({ onBurn, onCancel }: { onBurn: () => void; onCancel: () => void }) {
-  const enough = WALLET_SUMMARY.farmedBalance >= MINT_COST;
+  const { shortAddress } = useFarmedWallet();
+  // TODO(onchain): read the wallet's $FARMED balance once the mint address is final,
+  // show it here, and disable Burn when it's below MINT_COST.
   return (
     <div className="space-y-5">
       <div className="border-2 border-barn bg-barn/10 p-4 text-center">
@@ -157,12 +159,8 @@ function Confirm({ onBurn, onCancel }: { onBurn: () => void; onCancel: () => voi
 
       <dl className="space-y-1 text-xs">
         <div className="flex justify-between">
-          <dt className="text-muted">Your balance (mock)</dt>
-          <dd className="num text-[10px]">{fmtInt(WALLET_SUMMARY.farmedBalance)}</dd>
-        </div>
-        <div className="flex justify-between">
-          <dt className="text-muted">After burn</dt>
-          <dd className="num text-[10px]">{fmtInt(WALLET_SUMMARY.farmedBalance - MINT_COST)}</dd>
+          <dt className="text-muted">Wallet</dt>
+          <dd className="font-mono text-ink">{shortAddress}</dd>
         </div>
       </dl>
 
@@ -175,7 +173,7 @@ function Confirm({ onBurn, onCancel }: { onBurn: () => void; onCancel: () => voi
         <button type="button" className="btn btn-ghost flex-1" onClick={onCancel}>
           Cancel
         </button>
-        <button type="button" className="btn btn-gold flex-[2]" onClick={onBurn} disabled={!enough}>
+        <button type="button" className="btn btn-gold flex-[2]" onClick={onBurn}>
           <PixelIcon name="flame" size={18} />
           Burn {fmtInt(MINT_COST)}
         </button>

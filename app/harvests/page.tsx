@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Harvests" };
 
 const last24 = HARVEST_HISTORY.slice(0, 144);
 const sol24 = last24.reduce((s, r) => s + r.poolSol, 0);
-const best24 = Math.max(...last24.map((r) => r.poolSol));
+const best24 = last24.reduce((m, r) => Math.max(m, r.poolSol), 0);
 
 export default function HarvestsPage() {
   return (

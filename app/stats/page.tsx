@@ -20,7 +20,7 @@ export const metadata: Metadata = { title: "Stats" };
 
 // Est. SOL/day per farm = its share of network yield × trailing 24h pool (mock)
 const sol24 = HARVEST_HISTORY.slice(0, 144).reduce((s, r) => s + r.poolSol, 0);
-const solPerYieldPerDay = sol24 / PROTOCOL_STATS.totalYieldRate;
+const solPerYieldPerDay = PROTOCOL_STATS.totalYieldRate ? sol24 / PROTOCOL_STATS.totalYieldRate : 0;
 const maxOdds = Math.max(...CATALOGUE.map((f) => f.odds));
 
 export default function StatsPage() {

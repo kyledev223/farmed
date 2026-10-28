@@ -6,10 +6,21 @@ import { fmtInt, fmtSol, fmtUtc, shortAddr } from "@/lib/format";
 
 const PAGE = 25;
 
-/** MOCK — replace HARVEST_HISTORY with an indexer query, paginated by round. */
+/** TODO(indexer): replace HARVEST_HISTORY with an indexer query, paginated by round. */
 export function HarvestTable() {
   const [count, setCount] = useState(PAGE);
   const rows = HARVEST_HISTORY.slice(0, count);
+
+  if (rows.length === 0) {
+    return (
+      <div className="panel flex flex-col items-center px-6 py-14 text-center">
+        <p className="font-pixel text-[11px] uppercase text-ink">No harvests yet</p>
+        <p className="mt-4 max-w-sm text-sm text-muted">
+          The first round hasn&apos;t landed. Once it does, every payout shows up here with its transaction.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="panel">

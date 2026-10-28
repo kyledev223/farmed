@@ -17,12 +17,14 @@ export function StatStrip() {
       icon: "flame",
       tone: "text-barn-ink",
     },
-    {
-      label: "Last harvest",
-      value: clock ? `${fmtMmSs(clock.secondsSinceLast)}` : "--:--",
-      icon: "clock",
-      sub: `ago · #${fmtInt(PROTOCOL_STATS.lastHarvestRound)}`,
-    },
+    PROTOCOL_STATS.lastHarvestRound === 0
+      ? { label: "Last harvest", value: "None yet", icon: "clock", tone: "text-muted" }
+      : {
+          label: "Last harvest",
+          value: clock ? fmtMmSs(clock.secondsSinceLast) : "--:--",
+          icon: "clock",
+          sub: `ago · #${fmtInt(PROTOCOL_STATS.lastHarvestRound)}`,
+        },
   ];
 
   return (

@@ -1,7 +1,8 @@
 /**
- * MOCK DATA — everything on the site reads from here.
- * Replace each export with real onchain / indexer data when wiring up.
- * All values are deterministic (seeded) so server and client renders match.
+ * SITE DATA — everything on the site reads from here.
+ * The catalogue (farm specs, odds) is the real game design. Live values
+ * (harvests, protocol stats, owned farms) are zero/empty until launch and
+ * should be replaced with onchain / indexer data when wiring up.
  */
 
 export type SeriesKey = "jeeter" | "paperhand" | "bagholder" | "whale";
@@ -57,31 +58,6 @@ export const CONTRACT_ADDRESS = "8kFaRMeDq9ZtV3yWb2NxLcH7uPj4sE6aGmRf1TzQpump";
 export const X_URL = "https://x.com/";
 export const BUY_URL = "https://pump.fun/";
 export const EXPLORER_TX = (sig: string) => `https://solscan.io/tx/${sig}`;
-
-/** Fixed "now" for historical mock data (keeps SSR + client identical). */
-export const MOCK_NOW = Date.UTC(2026, 9, 28, 12, 0, 0);
-
-/* ------------------------------------------------------------------ */
-/* Seeded PRNG                                                         */
-/* ------------------------------------------------------------------ */
-
-function mulberry32(seed: number) {
-  let a = seed;
-  return () => {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-function fakeSig(rand: () => number, len = 88) {
-  let s = "";
-  for (let i = 0; i < len; i++) s += B58[Math.floor(rand() * B58.length)];
-  return s;
-}
 
 /* ------------------------------------------------------------------ */
 /* Catalogue: 4 series × 3 sizes                                       */
@@ -196,51 +172,20 @@ export function rollMockFarm(rand: () => number = Math.random): FarmSpec {
 }
 
 /* ------------------------------------------------------------------ */
-/* Harvest history: 7 days of 10-minute rounds                         */
+/* Harvests & protocol stats — zero until launch                       */
 /* ------------------------------------------------------------------ */
 
-const ROUNDS_7D = (7 * 24 * 60) / 10; // 1008
-const LATEST_ROUND = 8412;
-const FARMS_NOW = 3412;
+/** Newest first. Empty until the first harvest. TODO(indexer): fetch real rounds. */
+export const HARVEST_HISTORY: HarvestRound[] = [];
 
-function buildHistory(): HarvestRound[] {
-  const rand = mulberry32(0xfa12ed);
-  const rounds: HarvestRound[] = [];
-  for (let i = ROUNDS_7D - 1; i >= 0; i--) {
-    const t = MOCK_NOW - i * HARVEST_INTERVAL_SEC * 1000;
-    const progress = 1 - i / ROUNDS_7D; // 0 → 1 over the week
-    const farms = Math.round(FARMS_NOW * (0.62 + 0.38 * progress) - rand() * 6);
-    const hour = new Date(t).getUTCHours();
-    // Volume is busier during US hours, plus noise and the occasional pump
-    const daily = 0.75 + 0.45 * Math.sin(((hour - 9) / 24) * Math.PI * 2);
-    const pump = rand() > 0.975 ? 2.4 + rand() * 2 : 1;
-    const poolSol = +(0.18 * daily * pump * (0.6 + rand() * 0.8) * (0.7 + progress * 0.6)).toFixed(4);
-    rounds.push({
-      round: LATEST_ROUND - i,
-      time: new Date(t).toISOString(),
-      poolSol,
-      farmsPaid: farms,
-      totalYieldRate: Math.round(farms * EXPECTED_YIELD),
-      tx: fakeSig(rand),
-    });
-  }
-  return rounds.reverse(); // newest first
-}
-
-/** Newest first. */
-export const HARVEST_HISTORY: HarvestRound[] = buildHistory();
-
-const sum7d = HARVEST_HISTORY.reduce((s, r) => s + r.poolSol, 0);
-const latest = HARVEST_HISTORY[0];
-
+/** TODO(onchain): read from the program / indexer. */
 export const PROTOCOL_STATS = {
-  totalYieldRate: latest.totalYieldRate,
-  solHarvestedAllTime: +(612.4 + sum7d).toFixed(2),
-  farmsMinted: FARMS_NOW,
-  farmedBurned: FARMS_NOW * MINT_COST,
-  lastHarvestRound: latest.round,
-  lastHarvestSol: latest.poolSol,
-  holders: 2187,
+  totalYieldRate: 0,
+  solHarvestedAllTime: 0,
+  farmsMinted: 0,
+  farmedBurned: 0,
+  lastHarvestRound: 0,
+  lastHarvestSol: 0,
 };
 
 /* ------------------------------------------------------------------ */
@@ -279,32 +224,8 @@ export function getChartData(range: ChartRange): ChartPoint[] {
 }
 
 /* ------------------------------------------------------------------ */
-/* Connected wallet (MOCK)                                             */
+/* Connected wallet                                                    */
 /* ------------------------------------------------------------------ */
 
-const OWNED: [string, number, string, number][] = [
-  ["whale-2", 2981, "2026-10-21T18:40:00Z", 1.8421],
-  ["bagholder-3", 1404, "2026-10-12T03:10:00Z", 3.1177],
-  ["paperhand-2", 3120, "2026-10-24T22:00:00Z", 0.2864],
-  ["jeeter-1", 3307, "2026-10-27T09:30:00Z", 0.0119],
-  ["jeeter-3", 2412, "2026-10-17T14:20:00Z", 0.6038],
-];
-
-export const OWNED_FARMS: OwnedFarm[] = OWNED.map(([id, tokenId, mintedAt, solEarned]) => ({
-  mint: fakeSig(mulberry32(tokenId), 44),
-  tokenId,
-  spec: getSpec(id),
-  mintedAt,
-  solEarned,
-}));
-
-export const WALLET_SUMMARY = (() => {
-  const yieldRate = OWNED_FARMS.reduce((s, f) => s + f.spec.yieldRate, 0);
-  return {
-    address: "7xKpQm3vR9fWbN2sLc8hJdTzY4aEuG6oPq1VmB5nHrD",
-    yieldRate,
-    networkShare: yieldRate / PROTOCOL_STATS.totalYieldRate,
-    solEarned: OWNED_FARMS.reduce((s, f) => s + f.solEarned, 0),
-    farmedBalance: 245_310,
-  };
-})();
+/** TODO(onchain): the connected wallet's farm NFTs (e.g. DAS getAssetsByOwner). */
+export const OWNED_FARMS: OwnedFarm[] = [];
