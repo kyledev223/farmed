@@ -4,8 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { X_URL } from "@/lib/mock";
 import { ConnectWalletButton } from "./ConnectWalletButton";
 import { NAV } from "./nav";
+import { XIcon } from "./XIcon";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -30,7 +32,7 @@ export function SiteHeader() {
       >
         Skip to content
       </a>
-      <div className="container-farm flex h-16 items-center gap-4">
+      <div className="container-farm flex h-16 items-center gap-3 sm:gap-4">
         <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="FARMED home">
           {/* Icon on mobile, wordmark (which already includes the pitchfork) from sm up */}
           <Image src="/logo-icon.png" alt="" width={36} height={38} className="pixelated sm:hidden" priority />
@@ -61,11 +63,21 @@ export function SiteHeader() {
           </ul>
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1.5 min-[360px]:gap-2">
+          <a
+            href={X_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="FARMED on X (opens in new tab)"
+            title="Follow on X"
+            className="btn btn-ghost w-11 self-stretch px-0"
+          >
+            <XIcon size={16} />
+          </a>
           <ConnectWalletButton />
           <button
             type="button"
-            className="btn btn-ghost w-11 px-0 md:hidden"
+            className="btn btn-ghost w-11 self-stretch px-0 md:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}

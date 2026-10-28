@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CONTRACT_ADDRESS, X_URL } from "@/lib/mock";
 import { CopyButton } from "./CopyButton";
 import { NAV } from "./nav";
+import { XIcon } from "./XIcon";
 
 export function SiteFooter() {
   return (
@@ -52,9 +53,7 @@ export function SiteFooter() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm text-ink hover:text-neon"
             >
-              <span aria-hidden className="font-pixel text-xs">
-                X
-              </span>
+              <XIcon size={14} />
               Follow on X<span className="sr-only"> (opens in new tab)</span>
             </a>
           </div>
