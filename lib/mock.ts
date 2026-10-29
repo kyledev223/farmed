@@ -173,21 +173,111 @@ export function rollMockFarm(rand: () => number = Math.random): FarmSpec {
 }
 
 /* ------------------------------------------------------------------ */
-/* Harvests & protocol stats — zero until launch                       */
+/* Demo data switch                                                    */
 /* ------------------------------------------------------------------ */
 
-/** Newest first. Empty until the first harvest. TODO(indexer): fetch real rounds. */
-export const HARVEST_HISTORY: HarvestRound[] = [];
+/**
+ * true  = fill the site with made-up demo numbers (harvests, stats, owned farms).
+ * false = real launch state: everything zero / empty until onchain data is wired in.
+ * Turn this OFF before showing the site to real buyers: these numbers aren't real.
+ */
+export const DEMO_DATA = true;
+
+/** Fixed "now" for the demo history (keeps SSR + client renders identical). */
+const DEMO_NOW = Date.UTC(2026, 9, 28, 18, 0, 0);
+
+function mulberry32(seed: number) {
+  let a = seed;
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+function fakeSig(rand: () => number, len = 88) {
+  let s = "";
+  for (let i = 0; i < len; i++) s += B58[Math.floor(rand() * B58.length)];
+  return s;
+}
+
+/* ------------------------------------------------------------------ */
+/* Harvests & protocol stats                                           */
+/* ------------------------------------------------------------------ */
+
+/** Demo mints, oldest first: [farm id, owner wallet, hours before DEMO_NOW]. 2 farms in the last 2 hours. */
+const DEMO_MINTS: [string, string, number][] = [
+  ["jeeter-2", "A", 2],
+  ["paperhand-1", "B", 1],
+];
+/** The connected wallet is shown this owner's farms in demo mode. */
+const DEMO_YOU = "A";
+
+const demoMints = DEMO_MINTS.map(([id, owner, hoursAgo], i) => ({
+  tokenId: i + 1,
+  spec: getSpec(id),
+  owner,
+  mintedAt: DEMO_NOW - hoursAgo * 3_600_000,
+}));
+
+/** Harvest rounds since the first mint, plus each farm's running SOL earned. */
+function buildDemo() {
+  const rand = mulberry32(0xfa12ed);
+  const step = HARVEST_INTERVAL_SEC * 1000;
+  const earned = new Map<number, number>();
+  const rounds: HarvestRound[] = [];
+  for (let t = Math.floor(demoMints[0].mintedAt / step) * step + step; t <= DEMO_NOW; t += step) {
+    const live = demoMints.filter((m) => m.mintedAt < t);
+    const yieldRate = live.reduce((s, m) => s + m.spec.yieldRate, 0);
+    const hour = new Date(t).getUTCHours();
+    // A small new token's creator fees: busier in US hours, noisy, the occasional pump
+    const daily = 0.75 + 0.45 * Math.sin(((hour - 9) / 24) * Math.PI * 2);
+    const pump = rand() > 0.97 ? 2.5 + rand() * 2 : 1;
+    const poolSol = +(0.0045 * daily * pump * (0.5 + rand())).toFixed(5);
+    for (const m of live)
+      earned.set(m.tokenId, (earned.get(m.tokenId) ?? 0) + (poolSol * m.spec.yieldRate) / yieldRate);
+    rounds.push({
+      round: rounds.length + 1,
+      time: new Date(t).toISOString(),
+      poolSol,
+      farmsPaid: live.length,
+      totalYieldRate: yieldRate,
+      tx: fakeSig(rand),
+    });
+  }
+  return { rounds: rounds.reverse(), earned };
+}
+
+const demo = DEMO_DATA ? buildDemo() : null;
+
+/** Newest first. TODO(indexer): fetch real rounds. */
+export const HARVEST_HISTORY: HarvestRound[] = demo?.rounds ?? [];
 
 /** TODO(onchain): read from the program / indexer. */
-export const PROTOCOL_STATS = {
-  totalYieldRate: 0,
-  solHarvestedAllTime: 0,
-  farmsMinted: 0,
-  farmedBurned: 0,
-  lastHarvestRound: 0,
-  lastHarvestSol: 0,
-};
+export const PROTOCOL_STATS = (() => {
+  const latest = HARVEST_HISTORY[0];
+  if (!latest) {
+    return {
+      totalYieldRate: 0,
+      solHarvestedAllTime: 0,
+      farmsMinted: 0,
+      farmedBurned: 0,
+      lastHarvestRound: 0,
+      lastHarvestSol: 0,
+    };
+  }
+  return {
+    totalYieldRate: latest.totalYieldRate,
+    solHarvestedAllTime: +HARVEST_HISTORY.reduce((s, r) => s + r.poolSol, 0).toFixed(2),
+    farmsMinted: demoMints.length,
+    farmedBurned: demoMints.length * MINT_COST,
+    lastHarvestRound: latest.round,
+    lastHarvestSol: latest.poolSol,
+  };
+})();
 
 /* ------------------------------------------------------------------ */
 /* Chart series                                                        */
@@ -229,4 +319,14 @@ export function getChartData(range: ChartRange): ChartPoint[] {
 /* ------------------------------------------------------------------ */
 
 /** TODO(onchain): the connected wallet's farm NFTs (e.g. DAS getAssetsByOwner). */
-export const OWNED_FARMS: OwnedFarm[] = [];
+export const OWNED_FARMS: OwnedFarm[] = demo
+  ? demoMints
+      .filter((m) => m.owner === DEMO_YOU)
+      .map((m) => ({
+        mint: fakeSig(mulberry32(m.tokenId), 44),
+        tokenId: m.tokenId,
+        spec: m.spec,
+        mintedAt: new Date(m.mintedAt).toISOString(),
+        solEarned: demo.earned.get(m.tokenId) ?? 0,
+      }))
+  : [];

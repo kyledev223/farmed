@@ -13,7 +13,7 @@ import {
   YAxis,
   type TooltipProps,
 } from "recharts";
-import { CHART_RANGES, getChartData, type ChartPoint, type ChartRange } from "@/lib/mock";
+import { CHART_RANGES, HARVEST_HISTORY, getChartData, type ChartPoint, type ChartRange } from "@/lib/mock";
 import { fmtCompact, fmtInt, fmtSol, fmtUtc } from "@/lib/format";
 import { PixelIcon } from "./PixelIcon";
 
@@ -50,7 +50,8 @@ function ChartTooltip({ active, payload, range }: TooltipProps<number, string> &
 }
 
 export function HarvestChart() {
-  const [range, setRange] = useState<ChartRange>("24h");
+  // Open on the shortest range that still shows everything (one bar per round early on)
+  const [range, setRange] = useState<ChartRange>(HARVEST_HISTORY.length <= CHART_RANGES["6h"].rounds ? "6h" : "24h");
   const data = useMemo(() => getChartData(range), [range]);
   const unit = CHART_RANGES[range].unit;
   const total = data.reduce((s, d) => s + d.sol, 0);
@@ -123,7 +124,7 @@ export function HarvestChart() {
                       axisLine={false}
                       tickLine={false}
                       width={52}
-                      tickFormatter={(v: number) => v.toFixed(2)}
+                      tickFormatter={(v: number) => (v > 0 && v < 0.1 ? v.toFixed(3) : v.toFixed(2))}
                     />
                     <Tooltip content={tooltip} cursor={cursor} isAnimationActive={false} />
                     <Bar dataKey="sol" fill={NEON} isAnimationActive={false} />
@@ -152,7 +153,7 @@ export function HarvestChart() {
                       axisLine={false}
                       tickLine={false}
                       width={52}
-                      domain={["dataMin - 1000", "dataMax + 1000"]}
+                      domain={[0, (max: number) => Math.ceil(max * 1.15)]}
                       tickFormatter={(v: number) => fmtCompact(v)}
                     />
                     <Tooltip
